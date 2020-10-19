@@ -18,9 +18,9 @@ export async function getConfessions(req, res, next) {
       limit: Number(req.query.page) || 10,
     };
 
-    const posts = await Post.find({ approved: 1 })
+    const posts = await Post.find({ approved: 1 }) //only approved posts
       .skip(options.page * options.limit)
-      .limit(options.limit); //only approved posts
+      .limit(options.limit);
 
     const count = await Post.find({ approved: 1 }).countDocuments();
 
@@ -32,7 +32,6 @@ export async function getConfessions(req, res, next) {
         page: (options.page += 1),
       },
     };
-
     res
       .status(200)
       .send({ message: "Fetched posts successfully", posts, pagination });
@@ -49,13 +48,12 @@ export async function getFilteredConfessions(req, res, next) {
       limit: Number(req.query.page) || 10,
     };
 
+    const count = await Post.find({ approved: 1 }).countDocuments();
     if (filter === "4") {
-      const posts = await Post.find({ approved: 1 })
+      const posts = await Post.find({ approved: 1 }) //only approved posts
         .sort({ date: "desc" })
         .skip(options.page * options.limit)
-        .limit(options.limit); //only approved posts
-
-      const count = await Post.find({ approved: 1 }).countDocuments();
+        .limit(options.limit);
 
       const pagination = {
         current_page: options.page,
