@@ -1,6 +1,6 @@
 import express from "express";
 
-import { create, getConfessions } from "./posts_controller.js";
+import { create, getConfessions, rateConfession } from "./posts_controller.js";
 
 const router = express.Router();
 
@@ -8,5 +8,6 @@ router.post("/", create);
 
 router.get("/", getConfessions);
 
-//ekspotrovanje
+router.put("/:postId/:rate", rateConfession);
+
 export default router;
