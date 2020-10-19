@@ -41,22 +41,39 @@ export async function getConfessions(req, res, next) {
   }
 }
 
-// export async function getFilteredConfessions(req, res, next) {
-//   //dodavanje paginacije
-//   const currentPage = req.query.page || 1;
+export async function getFilteredConfessions(req, res, next) {
+  const filter = req.params.filter;
+  try {
+    const options = {
+      page: Number(req.query.page) || 0,
+      limit: Number(req.query.page) || 10,
+    };
 
-//   try {
-//     const totalPosts = await Post.find({ approved: 1 }).countDocuments();
+    if (filter === "4") {
+      const posts = await Post.find({ approved: 1 })
+        .sort({ date: "desc" })
+        .skip(options.page * options.limit)
+        .limit(options.limit); //only approved posts
 
-//     const posts = await Post.find({ approved: 1 })
-//       .skip((currentPage - 1) * ITEMS_PER_PAGE)
-//       .limit(ITEMS_PER_PAGE); //only approved posts
+      const count = await Post.find({ approved: 1 }).countDocuments();
 
-//     res.status(200).send(posts);
-//   } catch (error) {
-//     res.status(400).send(error);
-//   }
-// }
+      const pagination = {
+        current_page: options.page,
+        total_item_count: count,
+        total_page: parseInt(count / options.limit),
+        next: {
+          page: (options.page += 1),
+        },
+      };
+      res
+        .status(200)
+        .send({ message: "Fetched posts successfully", posts, pagination });
+    }
+  } catch {
+    const error = new Error("Needed to enter/click right value");
+    res.status(400).send(error);
+  }
+}
 
 export async function rateConfession(req, res, next) {
   try {
@@ -76,6 +93,6 @@ export async function rateConfession(req, res, next) {
     }
   } catch {
     const error = new Error("Needed to enter/click right value");
-    res.status(400).send(error);
+    res.status(404).send(error);
   }
 }

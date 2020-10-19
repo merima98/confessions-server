@@ -5,7 +5,7 @@ import cors from "cors";
 import posts_routes from "./posts/posts_routes.js";
 
 const MONGODB_URI =
-  "mongodb+srv://xyz:xyz@cluster0.w4ehk.mongodb.net/confessions"; //ovdje sada postavljam ime servera
+  "mongodb+srv://xyz:xyz@cluster0.w4ehk.mongodb.net/confessions";
 
 const { PORT } = process.env;
 const app = express();
@@ -26,4 +26,4 @@ app.use(express.json());
 
 app.use(posts_routes);
 
-app.listen(3500);
+app.listen(PORT);
