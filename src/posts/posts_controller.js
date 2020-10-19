@@ -12,21 +12,52 @@ export async function create(req, res, next) {
 }
 
 export async function getConfessions(req, res, next) {
-  //dodavanje paginacije
-  const currentPage = req.query.page || 1;
-
   try {
-    const totalPosts = await Post.find({ approved: 1 }).countDocuments();
+    const options = {
+      page: Number(req.query.page) || 0,
+      limit: Number(req.query.page) || 10,
+    };
 
     const posts = await Post.find({ approved: 1 })
-      .skip((currentPage - 1) * ITEMS_PER_PAGE)
-      .limit(ITEMS_PER_PAGE); //only approved posts
+      .skip(options.page * options.limit)
+      .limit(options.limit); //only approved posts
 
-    res.status(200).send(posts);
+    const count = await Post.find({ approved: 1 }).countDocuments();
+
+    const pagination = {
+      current_page: options.page,
+      total_item_count: count,
+      total_page: parseInt(count / options.limit),
+      next: {
+        page: (options.page += 1),
+      },
+    };
+
+    res
+      .status(200)
+      .send({ message: "Fetched posts successfully", posts, pagination });
   } catch (error) {
     res.status(400).send(error);
   }
 }
+
+// export async function getFilteredConfessions(req, res, next) {
+//   //dodavanje paginacije
+//   const currentPage = req.query.page || 1;
+
+//   try {
+//     const totalPosts = await Post.find({ approved: 1 }).countDocuments();
+
+//     const posts = await Post.find({ approved: 1 })
+//       .skip((currentPage - 1) * ITEMS_PER_PAGE)
+//       .limit(ITEMS_PER_PAGE); //only approved posts
+
+//     res.status(200).send(posts);
+//   } catch (error) {
+//     res.status(400).send(error);
+//   }
+// }
+
 export async function rateConfession(req, res, next) {
   try {
     const postId = req.params.postId;
