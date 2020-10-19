@@ -1,5 +1,7 @@
 import Post from "./posts_model.js";
 
+const ITEMS_PER_PAGE = 10;
+
 export async function create(req, res, next) {
   try {
     const post = await Post.create(req.body);
@@ -10,8 +12,15 @@ export async function create(req, res, next) {
 }
 
 export async function getConfessions(req, res, next) {
+  //dodavanje paginacije
+  const currentPage = req.query.page || 1;
+
   try {
-    const posts = await Post.find({ approved: 1 }); //only approved posts
+    const totalPosts = await Post.find({ approved: 1 }).countDocuments();
+
+    const posts = await Post.find({ approved: 1 })
+      .skip((currentPage - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE); //only approved posts
 
     res.status(200).send(posts);
   } catch (error) {
