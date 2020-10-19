@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
-
+import dotenv from "dotenv";
 import posts_routes from "./posts/posts_routes.js";
 
-const MONGODB_URI =
-  "mongodb+srv://xyz:xyz@cluster0.w4ehk.mongodb.net/confessions";
+dotenv.config();
 
-const { PORT } = process.env;
+const { PORT, MONGODB_URI } = process.env;
 const app = express();
 
 mongoose.connect(MONGODB_URI, {
