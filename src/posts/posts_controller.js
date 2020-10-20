@@ -49,19 +49,8 @@ export async function getFilteredConfessions(req, res, next) {
     };
 
     const count = await Post.find({ approved: 1 }).countDocuments();
-    // const posts = await Post.find({ approved: 1 }) //only approved posts
-    //   .sort({ date: "desc" })
-    //   .skip(options.page * options.limit)
-    //   .limit(options.limit);
     let posts;
 
-    if (filter === "4") {
-      // filter per lates posts - date
-      posts = await Post.find({ approved: 1 }) //only approved posts
-        .sort({ date: "desc" })
-        .skip(options.page * options.limit)
-        .limit(options.limit);
-    }
     if (filter === "2") {
       //filter per upvotes
       posts = await Post.find({ approved: 1 }) //only approved posts
@@ -69,7 +58,21 @@ export async function getFilteredConfessions(req, res, next) {
         .skip(options.page * options.limit)
         .limit(options.limit);
     }
-    if (filter !== "4" && filter !== "2") {
+    if (filter === "3") {
+      //filter per upvotes
+      posts = await Post.find({ approved: 1 }) //only approved posts
+        .sort({ totalDownvotes: "desc" })
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+    }
+    if (filter === "4") {
+      // filter per lates posts - date
+      posts = await Post.find({ approved: 1 }) //only approved posts
+        .sort({ date: "desc" })
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+    }
+    if (filter !== "4" && filter !== "2" && filter !== "3") {
       throw Error();
     }
     const pagination = {
