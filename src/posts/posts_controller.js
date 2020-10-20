@@ -131,3 +131,12 @@ export async function rateConfession(req, res, next) {
     res.status(404).send(error);
   }
 }
+
+export async function getConfessionsOnHold(req, res, next) {
+  try {
+    const posts = await Post.findOne({ approved: 2 }); //posts on hold
+    res.status(200).send({ message: "Post fetched successfully", posts });
+  } catch (error) {
+    res.status(400).send({ message: "Could not load post!", err });
+  }
+}
