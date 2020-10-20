@@ -6,6 +6,7 @@ import {
   rateConfession,
   getFilteredConfessions,
   getConfessionsOnHold,
+  moderateConfessionsOnHold,
 } from "./posts_controller.js";
 
 const router = express.Router();
@@ -19,5 +20,7 @@ router.get("/sort/:filter", getFilteredConfessions); //Return confessions depend
 router.put("/:postId/:rate", rateConfession); //Upvote or Downvote
 
 router.get("/moderate", getConfessionsOnHold);
+
+router.put("/moderate/:postId/:rate", moderateConfessionsOnHold);
 
 export default router;
