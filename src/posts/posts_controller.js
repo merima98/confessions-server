@@ -40,6 +40,18 @@ export async function getConfessions(req, res, next) {
   }
 }
 
+function shuffle(array) {
+  var result = [],
+    source = array.concat([]);
+
+  while (source.length) {
+    let index = Math.floor(Math.random() * source.length);
+    result.push(source.splice(index, 1)[0]);
+  }
+
+  return result;
+}
+
 export async function getFilteredConfessions(req, res, next) {
   const filter = req.params.filter;
   try {
@@ -51,6 +63,13 @@ export async function getFilteredConfessions(req, res, next) {
     const count = await Post.find({ approved: 1 }).countDocuments();
     let posts;
 
+    if (filter === "1") {
+      posts = await Post.find({ approved: 1 }) //only approved posts
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+
+      posts = shuffle(posts);
+    }
     if (filter === "2") {
       //filter per upvotes
       posts = await Post.find({ approved: 1 }) //only approved posts
@@ -72,7 +91,7 @@ export async function getFilteredConfessions(req, res, next) {
         .skip(options.page * options.limit)
         .limit(options.limit);
     }
-    if (filter !== "4" && filter !== "2" && filter !== "3") {
+    if (filter !== "4" && filter !== "2" && filter !== "3" && filter !== "1") {
       throw Error();
     }
     const pagination = {
