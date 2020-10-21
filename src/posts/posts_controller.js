@@ -1,7 +1,5 @@
 import Post from "./posts_model.js";
 
-const ITEMS_PER_PAGE = 10;
-
 export async function create(req, res, next) {
   try {
     const post = await Post.create(req.body);
