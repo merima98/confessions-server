@@ -41,8 +41,8 @@ export async function getConfessions(req, res, next) {
 }
 
 function shuffle(array) {
-  var result = [],
-    source = array.concat([]);
+  const result = [];
+  const source = array.concat([]);
 
   while (source.length) {
     let index = Math.floor(Math.random() * source.length);
