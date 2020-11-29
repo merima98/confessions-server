@@ -129,34 +129,3 @@ export async function rateConfession(req, res, next) {
     res.status(404).send(error);
   }
 }
-
-export async function getConfessionsOnHold(req, res, next) {
-  try {
-    const posts = await Post.findOne({ approved: 2 }); //posts on hold
-    res.status(200).send({ message: "Post fetched successfully", posts });
-  } catch (error) {
-    res.status(400).send({ message: "Could not load post!", err });
-  }
-}
-
-export async function moderateConfessionsOnHold(req, res, next) {
-  try {
-    const postId = req.params.postId;
-    const rate = req.params.rate;
-    const post = await Post.findById(postId);
-    if (rate === "0") {
-      //negative
-      post.approved = 0;
-      await post.save();
-      res.status(200).send({ message: "Rejected!", post });
-    } else if (rate === "1") {
-      //positive
-      post.approved = 1;
-      await post.save();
-      res.status(200).send({ message: "Approved!", post });
-    }
-  } catch {
-    const error = new Error("Needed to enter/click right value");
-    res.status(404).send(error);
-  }
-}

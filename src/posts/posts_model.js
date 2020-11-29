@@ -11,7 +11,7 @@ const PostSchema = new mongoose.Schema({
   },
   approved: {
     type: Number,
-    default: 2, //0 - rejected | 1 - approved | 2 - on hold
+    default: 1,
   },
   totalUpvotes: {
     type: Number,
