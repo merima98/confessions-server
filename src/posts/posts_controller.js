@@ -12,22 +12,22 @@ export async function create(req, res, next) {
 export async function getConfessions(req, res, next) {
   try {
     const options = {
-      page: Number(req.query.page) || 0,
+      page: Number(req.query.page) || 1,
       limit: Number(req.query.page) || 10,
     };
 
     const posts = await Post.find({ approved: 1 }) //only approved posts
-      .skip(options.page * options.limit)
+      .skip(req.params.page * options.limit)
       .limit(options.limit);
 
     const count = await Post.find({ approved: 1 }).countDocuments();
 
     const pagination = {
-      current_page: options.page,
+      current_page: req.params.page,
       total_item_count: count,
       total_page: parseInt(count / options.limit),
       next: {
-        page: (options.page += 1),
+        page: (req.params.page += 1),
       },
     };
     res
@@ -54,7 +54,7 @@ export async function getFilteredConfessions(req, res, next) {
   const filter = req.params.filter;
   try {
     const options = {
-      page: Number(req.query.page) || 0,
+      page: Number(req.params.page) || 0,
       limit: Number(req.query.page) || 10,
     };
 
@@ -63,7 +63,7 @@ export async function getFilteredConfessions(req, res, next) {
 
     if (filter === "1") {
       posts = await Post.find({ approved: 1 }) //only approved posts
-        .skip(options.page * options.limit)
+        .skip(req.params.page * options.limit)
         .limit(options.limit);
 
       posts = shuffle(posts);
@@ -72,32 +72,32 @@ export async function getFilteredConfessions(req, res, next) {
       //filter per upvotes
       posts = await Post.find({ approved: 1 }) //only approved posts
         .sort({ totalUpvotes: "desc" })
-        .skip(options.page * options.limit)
+        .skip(req.params.page * options.limit)
         .limit(options.limit);
     }
     if (filter === "3") {
       //filter per upvotes
       posts = await Post.find({ approved: 1 }) //only approved posts
         .sort({ totalDownvotes: "desc" })
-        .skip(options.page * options.limit)
+        .skip(req.params.page * options.limit)
         .limit(options.limit);
     }
     if (filter === "4") {
       // filter per lates posts - date
       posts = await Post.find({ approved: 1 }) //only approved posts
         .sort({ date: "desc" })
-        .skip(options.page * options.limit)
+        .skip(req.params.page * options.limit)
         .limit(options.limit);
     }
     if (filter !== "4" && filter !== "2" && filter !== "3" && filter !== "1") {
       throw Error();
     }
     const pagination = {
-      current_page: options.page,
+      current_page: req.params.page,
       total_item_count: count,
       total_page: parseInt(count / options.limit),
       next: {
-        page: (options.page += 1),
+        page: parseInt(req.params.page) + parseInt(1),
       },
     };
     res
