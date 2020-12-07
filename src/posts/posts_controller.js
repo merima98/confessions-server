@@ -12,7 +12,7 @@ export async function create(req, res, next) {
 export async function getConfessions(req, res, next) {
   try {
     const options = {
-      page: Number(req.query.page) || 1,
+      page: Number(req.params.page) || 0,
       limit: Number(req.query.page) || 10,
     };
 
@@ -27,7 +27,7 @@ export async function getConfessions(req, res, next) {
       total_item_count: count,
       total_page: parseInt(count / options.limit),
       next: {
-        page: (req.params.page += 1),
+        page: parseInt(req.params.page) + parseInt(1),
       },
     };
     res
