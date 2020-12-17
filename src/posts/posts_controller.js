@@ -17,6 +17,7 @@ export async function getConfessions(req, res, next) {
     };
 
     const posts = await Post.find({ approved: 1 }) //only approved posts
+      .sort({ date: "desc" })
       .skip(req.params.page * options.limit)
       .limit(options.limit);
 
