@@ -11,29 +11,67 @@ export async function create(req, res, next) {
 
 export async function getConfessions(req, res, next) {
   try {
+    console.log("Query, ", req.query);
+    console.log("Parrams, ", req.params);
+
     const options = {
-      page: Number(req.params.page) || 0,
-      limit: Number(req.query.page) || 10,
+      page: Number(req.query.page) || 0,
+      limit: Number(req.query.limit) || 10,
     };
+    let posts;
+    let sortNumber = req.query.sort;
 
-    const posts = await Post.find({ approved: 1 }) //only approved posts
-      .sort({ date: "desc" })
-      .skip(req.params.page * options.limit)
-      .limit(options.limit);
+    if (sortNumber === "0") {
+      posts = await Post.find({})
+        .sort({ date: "desc" })
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+    }
+    if (sortNumber === "1") {
+      //random
+      posts = await Post.find({})
+        .skip(options.page * options.limit)
+        .limit(options.limit);
 
-    const count = await Post.find({ approved: 1 }).countDocuments();
+      posts = shuffle(posts);
+    }
+    if (sortNumber === "2") {
+      posts = await Post.find({})
+        .sort({ totalUpvotes: "desc" })
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+    }
+    if (sortNumber === "3") {
+      posts = await Post.find({})
+        .sort({ totalDownvotes: "desc" })
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+    }
+
+    if (
+      sortNumber !== "0" &&
+      sortNumber !== "1" &&
+      sortNumber !== "2" &&
+      sortNumber !== "3"
+    ) {
+      throw Error();
+    }
+    const count = await Post.find().countDocuments();
 
     const pagination = {
-      current_page: req.params.page,
+      current_page: options.page,
       total_item_count: count,
       total_page: parseInt(count / options.limit),
       next: {
-        page: parseInt(req.params.page) + parseInt(1),
+        page: (options.page += 1),
       },
     };
-    res
-      .status(200)
-      .send({ message: "Fetched posts successfully", posts, pagination });
+    res.status(200).send({
+      message: "Fetched posts successfully",
+      posts,
+      pagination,
+      sortNumber,
+    });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -51,68 +89,10 @@ function shuffle(array) {
   return result;
 }
 
-export async function getFilteredConfessions(req, res, next) {
-  const filter = req.params.filter;
-  try {
-    const options = {
-      page: Number(req.params.page) || 0,
-      limit: Number(req.query.page) || 10,
-    };
-
-    const count = await Post.find({ approved: 1 }).countDocuments();
-    let posts;
-
-    if (filter === "1") {
-      posts = await Post.find({ approved: 1 }) //only approved posts
-        .skip(req.params.page * options.limit)
-        .limit(options.limit);
-
-      posts = shuffle(posts);
-    }
-    if (filter === "2") {
-      //filter per upvotes
-      posts = await Post.find({ approved: 1 }) //only approved posts
-        .sort({ totalUpvotes: "desc" })
-        .skip(req.params.page * options.limit)
-        .limit(options.limit);
-    }
-    if (filter === "3") {
-      //filter per upvotes
-      posts = await Post.find({ approved: 1 }) //only approved posts
-        .sort({ totalDownvotes: "desc" })
-        .skip(req.params.page * options.limit)
-        .limit(options.limit);
-    }
-    if (filter === "4") {
-      // filter per lates posts - date
-      posts = await Post.find({ approved: 1 }) //only approved posts
-        .sort({ date: "desc" })
-        .skip(req.params.page * options.limit)
-        .limit(options.limit);
-    }
-    if (filter !== "4" && filter !== "2" && filter !== "3" && filter !== "1") {
-      throw Error();
-    }
-    const pagination = {
-      current_page: req.params.page,
-      total_item_count: count,
-      total_page: parseInt(count / options.limit),
-      next: {
-        page: parseInt(req.params.page) + parseInt(1),
-      },
-    };
-    res
-      .status(200)
-      .send({ message: "Fetched posts successfully", posts, pagination });
-  } catch (err) {
-    res.status(400).send({ message: "Needed to enter/click right value", err });
-  }
-}
-
 export async function rateConfession(req, res, next) {
   try {
-    const postId = req.params.postId;
-    const rate = req.params.rate;
+    const postId = req.query.postId;
+    const rate = req.query.rate;
     const post = await Post.findById(postId);
     if (rate === "0") {
       //negative
