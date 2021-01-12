@@ -3,7 +3,7 @@ import Post from "./posts_model.js";
 export async function create(req, res, next) {
   try {
     const post = await Post.create(req.body);
-    res.status(201).send("Created!");
+    res.status(201).send(post);
   } catch (error) {
     res.status(400).send(error);
   }
