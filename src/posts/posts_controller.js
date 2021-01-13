@@ -11,9 +11,6 @@ export async function create(req, res, next) {
 
 export async function getConfessions(req, res, next) {
   try {
-    console.log("Query, ", req.query);
-    console.log("Parrams, ", req.params);
-
     const options = {
       page: Number(req.query.page) || 0,
       limit: Number(req.query.limit) || 10,
