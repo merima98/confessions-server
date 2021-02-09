@@ -24,5 +24,4 @@ app.use(
 app.use(express.json());
 
 app.use(posts_routes);
-
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+app.listen(PORT);
